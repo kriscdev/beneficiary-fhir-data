@@ -406,7 +406,7 @@ public final class EndpointJsonResponseComparatorIT {
 
     IGenericClient fhirClient = createFhirClientAndSetEncoding();
     ExtraParamsInterceptor extraParamsInterceptor = new ExtraParamsInterceptor();
-    extraParamsInterceptor.setIncludeIdentifiers("hicn,mbi");
+    extraParamsInterceptor.setIncludeIdentifiers("hicn,mbi", "true");
     fhirClient.registerInterceptor(extraParamsInterceptor);
     JsonInterceptor jsonInterceptor = createAndRegisterJsonInterceptor(fhirClient);
 
@@ -458,7 +458,7 @@ public final class EndpointJsonResponseComparatorIT {
 
     IGenericClient fhirClient = createFhirClientAndSetEncoding();
     ExtraParamsInterceptor extraParamsInterceptor = new ExtraParamsInterceptor();
-    extraParamsInterceptor.setIncludeIdentifiers("hicn,mbi");
+    extraParamsInterceptor.setIncludeIdentifiers("hicn,mbi", "true");
     fhirClient.registerInterceptor(extraParamsInterceptor);
     JsonInterceptor jsonInterceptor = createAndRegisterJsonInterceptor(fhirClient);
 
@@ -519,7 +519,7 @@ public final class EndpointJsonResponseComparatorIT {
 
     IGenericClient fhirClient = createFhirClientAndSetEncoding();
     ExtraParamsInterceptor extraParamsInterceptor = new ExtraParamsInterceptor();
-    extraParamsInterceptor.setIncludeIdentifiers("hicn,mbi");
+    extraParamsInterceptor.setIncludeIdentifiers("hicn,mbi", "true");
     fhirClient.registerInterceptor(extraParamsInterceptor);
     JsonInterceptor jsonInterceptor = createAndRegisterJsonInterceptor(fhirClient);
 
