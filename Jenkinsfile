@@ -59,7 +59,9 @@ def amiIds
 
 // used for notifications
 def getBuildUser(){
-  return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+	buildUser = sh ( script: "BUILD_BY=\$(curl -k --silent ${BUILD_URL}/api/xml | tr '<' '\n' | egrep '^userId>|^userName>' | sed 's/.*>//g' | sed -e '1s/\$/ \\/ /g'); if [[ -z \${BUILD_BY} ]]; then BUILD_BY=\$(curl -k --silent ${BUILD_URL}/api/xml | tr '<' '\n' | grep '^shortDescription>' | sed 's/.*user //g;s/.*by //g'); fi; echo \${BUILD_BY}", returnStdout: true ).trim()
+	return buildUser
+  // return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
 }
 
 // send notifications to slack, email, etc
