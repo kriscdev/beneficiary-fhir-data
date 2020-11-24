@@ -57,8 +57,49 @@ def willDeployToProdEnvs
 def appBuildResults
 def amiIds
 
+// used for notifications
+def getBuildUser(){
+  return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+}
+
+// send notifications to slack, email, etc
+def notify(String stageName, String statusMsg){
+  // set build user
+  buildUser = getBuildUser()
+
+	// build colors
+  def colorMap = [:]
+  colorMap['STARTED']  = '#fefcd7'
+  colorMap['SUCCESS']  = '#00FF00'
+  colorMap['ABORTED']  = '#6A0DAD'
+  colorMap['UNSTABLE'] = '#FFFF00'
+  colorMap['FAILED']   = '#FF0000'
+
+  // send to slack
+  def buildColor = ''
+  def slackMsg = ''
+  if (stageName == 'Prepare') {
+    buildColor = colorMap['STARTED']
+    slackMsg = "${buildUser}'s build #${env.BUILD_NUMBER} ${statusMsg} -> ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)"
+  } else {
+    buildColor = colorMap[currentBuild.currentResult]
+    slackMsg = "${buildUser}'s build #${env.BUILD_NUMBER} ${statusMsg} -> ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)"
+  }
+  slackSend (color: buildColor, message: slackMsg)
+  
+  // future notifications can go here. (email, other channels, etc)
+}
+
+environment {
+  BUILD_USER=''
+  CUR_STAGE=''
+}
+
 stage('Prepare') {
 	node {
+		// notify build has started
+		notify('Prepare', 'has started')
+		
 		// Grab the commit that triggered the build.
 		checkout scm
 
@@ -198,4 +239,11 @@ stage('Deploy to PROD') {
 	} else {
 		org.jenkinsci.plugins.pipeline.modeldefinition.Utils.markStageSkippedForConditional('Deploy to prod')
 	}
+}
+
+post {
+  aborted  { notify(env.STAGE_NAME, 'was aborted')}
+  failure  { notify(env.STAGE_NAME, 'has failed')}
+  success  { notify(env.STAGE_NAME, 'succeeded')}
+  unstable { notify(env.STAGE_NAME, 'is unstable')}
 }
