@@ -58,7 +58,7 @@ def appBuildResults
 def amiIds
 
 // send notifications to slack, email, etc
-def notify(String stageName = '', String statusMsg = ''){
+def sendNotifications(String stageName = '', String statusMsg = ''){
 	// build colors
   def colorMap = [:]
   colorMap['STARTED']  = '#fefcd7'
@@ -90,7 +90,7 @@ environment {
 stage('Prepare') {
 	node {
 		// notify build has started
-		notify('Prepare')
+		sendNotifications('Prepare')
 		
 		// Grab the commit that triggered the build.
 		checkout scm
@@ -234,8 +234,8 @@ stage('Deploy to PROD') {
 }
 
 post {
-  aborted  { notify(env.STAGE_NAME, 'was aborted')}
-  failure  { notify(env.STAGE_NAME, 'has failed')}
-  success  { notify(env.STAGE_NAME, 'succeeded')}
-  unstable { notify(env.STAGE_NAME, 'is unstable')}
+  aborted  { sendNotifications(env.STAGE_NAME, 'was aborted')}
+  failure  { sendNotifications(env.STAGE_NAME, 'has failed')}
+  success  { sendNotifications(env.STAGE_NAME, 'succeeded')}
+  unstable { sendNotifications(env.STAGE_NAME, 'is unstable')}
 }
