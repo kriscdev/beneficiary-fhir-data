@@ -57,18 +57,8 @@ def willDeployToProdEnvs
 def appBuildResults
 def amiIds
 
-// used for notifications
-def getBuildUser(){
-	buildUser = sh ( script: "BUILD_BY=\$(curl -k --silent ${BUILD_URL}/api/xml | tr '<' '\n' | egrep '^userId>|^userName>' | sed 's/.*>//g' | sed -e '1s/\$/ \\/ /g'); if [[ -z \${BUILD_BY} ]]; then BUILD_BY=\$(curl -k --silent ${BUILD_URL}/api/xml | tr '<' '\n' | grep '^shortDescription>' | sed 's/.*user //g;s/.*by //g'); fi; echo \${BUILD_BY}", returnStdout: true ).trim()
-	return buildUser
-  // return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
-}
-
 // send notifications to slack, email, etc
-def notify(String stageName, String statusMsg){
-  // set build user
-  buildUser = getBuildUser()
-
+def notify(String stageName = '', String statusMsg = ''){
 	// build colors
   def colorMap = [:]
   colorMap['STARTED']  = '#fefcd7'
@@ -82,10 +72,10 @@ def notify(String stageName, String statusMsg){
   def slackMsg = ''
   if (stageName == 'Prepare') {
     buildColor = colorMap['STARTED']
-    slackMsg = "${buildUser}'s build #${env.BUILD_NUMBER} ${statusMsg} -> ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)"
+    slackMsg = "build #${env.BUILD_NUMBER} started -> BRANCH: ${env.BRANCH_NAME} JOB: ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)"
   } else {
     buildColor = colorMap[currentBuild.currentResult]
-    slackMsg = "${buildUser}'s build #${env.BUILD_NUMBER} ${statusMsg} -> ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)"
+    slackMsg = "build #${env.BUILD_NUMBER} ${statusMsg} -> BRANCH: ${env.BRANCH_NAME} JOB: ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)"
   }
   slackSend (color: buildColor, message: slackMsg)
   
@@ -100,7 +90,7 @@ environment {
 stage('Prepare') {
 	node {
 		// notify build has started
-		notify('Prepare', 'has started')
+		notify('Prepare')
 		
 		// Grab the commit that triggered the build.
 		checkout scm
