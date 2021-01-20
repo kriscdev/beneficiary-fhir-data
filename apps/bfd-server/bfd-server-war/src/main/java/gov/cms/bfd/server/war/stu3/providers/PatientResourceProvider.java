@@ -14,7 +14,6 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.base.Strings;
 import com.codahale.metrics.Timer;
 import com.newrelic.api.agent.Trace;
 import gov.cms.bfd.model.codebook.data.CcwCodebookVariable;
@@ -843,7 +842,8 @@ public final class PatientResourceProvider implements IResourceProvider {
    * @return True or False.
    */
   public static Boolean returnIncludeAddressFieldsValue(String headerValue) {
-    return (Strings.isNullOrEmpty(headerValue)
+    return (headerValue == null
+            || headerValue == ""
             || headerValue.equalsIgnoreCase("FALSE")
             || !headerValue.equalsIgnoreCase("TRUE"))
         ? Boolean.FALSE
@@ -859,7 +859,8 @@ public final class PatientResourceProvider implements IResourceProvider {
    *     list.
    */
   public static List<String> returnIncludeIdentifiersValues(String headerValues) {
-    if (Strings.isNullOrEmpty(headerValues)
+    if (headerValues == null
+        || headerValues.isEmpty()
         || headerValues.trim().replaceAll("^\\[|\\]$", "").isEmpty()) return Arrays.asList("");
     else {
       // Return values split on a comma with any whitespace, valid, distict, and sort
