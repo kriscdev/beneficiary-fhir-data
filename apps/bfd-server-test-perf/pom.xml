@@ -22,7 +22,7 @@
 					gets included in the shaded Uber JAR. -->
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.5.1</version>
+				<version>4.5.13</version>
 			</dependency>
 			<dependency>
 				<!-- Ensure that this version, which hapi-fhir-* absolutely requires, 
